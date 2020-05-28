@@ -37,9 +37,19 @@ namespace gcgcg
         private int xPointClick;
         private int yPointClick;
 
+        private bool TRE = false;
+        private bool scale = false;
+
+        private bool rotatate = false;
+
         private bool createDynamicPolygon = false;
         private bool poligonoQualquer = false;
 
+        private int translacaoX = 0;
+        private int translacaoY = 0;
+
+        private int lastPositionX;
+        private int lastPositionY;
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -139,6 +149,7 @@ namespace gcgcg
                 {
                     this.poligonoQualquer = false;
                     objetoSelecionado = null;
+                    objetoNovo.PontosRemoverUltimo();
                     objetoNovo = null;
                 }
             }
@@ -170,11 +181,23 @@ namespace gcgcg
                     this.verticeMaisProximo = null;
                 }
             }
+            else if (e.Key == Key.T)
+            {
+                //Translação
+                Poligono poligono = (Poligono)this.objetoSelecionado;
+                Transformacao4D transformacao4D = poligono.Matriz;
+                double[] teste = transformacao4D.ObterDados();
+                this.translacaoX++;
+                this.translacaoY++;
+                teste[11] = this.translacaoX;
+                teste[12] = this.translacaoY;
+                teste[13] = this.translacaoY;
+                Console.Write("");
+            }
             else if (e.Key == Key.Q)
             {
                 //Encerrar
-                objetoNovo.PontosUltimo().X = mouseX;
-                objetoNovo.PontosUltimo().Y = mouseY;
+                objetoNovo.PontosRemoverUltimo();
                 this.createDynamicPolygon = false;
                 objetoNovo = null;
                 objetoSelecionado = null;
@@ -222,6 +245,34 @@ namespace gcgcg
                     objetoSelecionado.EscalaXYZ(0.5, 0.5, 0.5);
                 else if (e.Key == Key.Home)
                     objetoSelecionado.EscalaXYZBBox(0.5, 0.5, 0.5);
+                else if (e.Key == Key.B)
+                    if (!TRE)
+                    {
+                        TRE = true;
+                    }
+                    else
+                    {
+                        TRE = false;
+                    }
+                else if (e.Key == Key.C)
+                    if (!scale)
+                    {
+                        scale = true;
+                    }
+                    else
+                    {
+                        scale = false;
+                    }
+                else if (e.Key == Key.X)
+                    if (!this.rotatate)
+                    {
+                        this.rotatate = true;
+                    }
+                    else
+                    {
+                        this.rotatate = false;
+                    }
+
                 else if (e.Key == Key.End)
                     objetoSelecionado.EscalaXYZBBox(2, 2, 2);
                 else if (e.Key == Key.Number1)
@@ -245,6 +296,13 @@ namespace gcgcg
         protected override void OnMouseMove(MouseMoveEventArgs e)
         {
             mouseX = e.Position.X; mouseY = 600 - e.Position.Y; // Inverti eixo Y
+
+            if (this.lastPositionX == 0 && this.lastPositionY == 0)
+            {
+                this.lastPositionX = mouseX;
+                this.lastPositionY = mouseY;
+            }
+
             if ((objetoNovo != null))
             {
                 objetoNovo.PontosUltimo().X = mouseX;
@@ -256,6 +314,100 @@ namespace gcgcg
                 Ponto4D verticeSelecionado = poligonoSelecionado.getVertice(verticeMaisProximo);
                 verticeSelecionado.X = mouseX;
                 verticeSelecionado.Y = mouseY;
+            }
+            else if (objetoSelecionado != null && this.TRE)
+            {
+                if (mouseX < this.lastPositionX && mouseY < this.lastPositionY)
+                {
+                    objetoSelecionado.TranslacaoXYZ(-2, -2, 0);
+                    this.lastPositionX = mouseX;
+                    this.lastPositionY = mouseY;
+                }
+                else if (mouseX > this.lastPositionX && mouseY > this.lastPositionY)
+                {
+                    objetoSelecionado.TranslacaoXYZ(2, 2, 0);
+                    this.lastPositionX = mouseX;
+                    this.lastPositionY = mouseY;
+                }
+                else if (mouseX < this.lastPositionX && mouseY > this.lastPositionY)
+                {
+                    objetoSelecionado.TranslacaoXYZ(-2, 2, 0);
+                    this.lastPositionX = mouseX;
+                    this.lastPositionY = mouseY;
+                }
+                else if (mouseX > this.lastPositionX && mouseY < this.lastPositionY)
+                {
+                    objetoSelecionado.TranslacaoXYZ(2, -2, 0);
+                    this.lastPositionX = mouseX;
+                    this.lastPositionY = mouseY;
+                }
+                else if (mouseX < this.lastPositionX)
+                {
+                    objetoSelecionado.TranslacaoXYZ(-2, 0, 0);
+                    this.lastPositionX = mouseX;
+                }
+                else if (mouseX > this.lastPositionX)
+                {
+                    objetoSelecionado.TranslacaoXYZ(2, 0, 0);
+                    this.lastPositionX = mouseX;
+                }
+                else if (mouseY < this.lastPositionY)
+                {
+                    objetoSelecionado.TranslacaoXYZ(0, -2, 0);
+                    this.lastPositionY = mouseY;
+                }
+                else if (mouseY > this.lastPositionY)
+                {
+                    objetoSelecionado.TranslacaoXYZ(0, 2, 0);
+                    this.lastPositionY = mouseY;
+                }
+            }
+            else if (objetoSelecionado != null && this.scale)
+            {
+                if (mouseX < this.lastPositionX)
+                {
+                    objetoSelecionado.EscalaXYZBBox(1.05, 1.05, 1.05);
+                    this.lastPositionX = mouseX;
+                }
+                else if (mouseX > this.lastPositionX)
+                {
+                    objetoSelecionado.EscalaXYZBBox(0.95, 0.95, 0.95);
+                    this.lastPositionX = mouseX;
+                }
+                else if (mouseY < this.lastPositionY)
+                {
+                    objetoSelecionado.EscalaXYZBBox(0.95, 0.95, 0.95);
+                    this.lastPositionY = mouseY;
+                }
+                else if (mouseY > this.lastPositionY)
+                {
+                    objetoSelecionado.EscalaXYZBBox(1.05, 1.05, 1.05);
+                    this.lastPositionY = mouseY;
+                }
+            }
+
+            else if (objetoSelecionado != null && this.rotatate)
+            {
+                if (mouseX < this.lastPositionX)
+                {
+                    objetoSelecionado.RotacaoZBBox(2);
+                    this.lastPositionX = mouseX;
+                }
+                else if (mouseX > this.lastPositionX)
+                {
+                    objetoSelecionado.RotacaoZBBox(-2);
+                    this.lastPositionX = mouseX;
+                }
+                else if (mouseY < this.lastPositionY)
+                {
+                    objetoSelecionado.RotacaoZBBox(2);
+                    this.lastPositionY = mouseY;
+                }
+                else if (mouseY > this.lastPositionY)
+                {
+                    objetoSelecionado.RotacaoZBBox(-2);
+                    this.lastPositionY = mouseY;
+                }
             }
         }
 
