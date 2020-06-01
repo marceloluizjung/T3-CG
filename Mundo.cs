@@ -285,6 +285,21 @@ namespace gcgcg
                     objetoSelecionado.RotacaoZBBox(-10);
                 else if (e.Key == Key.Number9)
                     objetoSelecionado = null;
+                else if (e.Key == Key.Number5)
+                {
+                    Poligono poligonoSelecionado = (Poligono)objetoSelecionado;
+                    poligonoSelecionado.PrimitivaCor = OpenTK.Color.Red;
+                }
+                else if (e.Key == Key.Number6)
+                {
+                    Poligono poligonoSelecionado = (Poligono)objetoSelecionado;
+                    poligonoSelecionado.PrimitivaCor = OpenTK.Color.Green;
+                }
+                else if (e.Key == Key.Number7)
+                {
+                    Poligono poligonoSelecionado = (Poligono)objetoSelecionado;
+                    poligonoSelecionado.PrimitivaCor = OpenTK.Color.Blue;
+                }
                 else
                     Console.WriteLine(" __ Tecla não implementada.");
             }

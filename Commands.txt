@@ -1,0 +1,12 @@
+CG comands 
+
+Seleção - Click direito
+Exclusão - Click esquerdo
+Add polígono e pontos - N
+Encerrar a adição de polígonos - Q
+Selecionar o vértice mais próximo e setar nova posição - L
+Polígonos abertos ou fechados - R
+Translação - B
+Escala - C
+Rotate - X
+RGB - 5, 6, 7
