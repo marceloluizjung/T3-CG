@@ -442,13 +442,47 @@ namespace gcgcg
                 if (!this.poligonoQualquer)
                 {
                     this.objetoSelecionado = null;
+                    Poligono poligono;
+                    BBox bBox;
+                    List<Ponto4D> pontos;
+                    Ponto4D pontoAtual, pontoAux;
+                    double ti, xi;
+                    int iteracoes = 0;
                     foreach (Object objeto in this.objetosLista)
                     {
-                        Poligono poligono = (Poligono)objeto;
-                        BBox bBox = poligono.BBox;
+                        poligono = (Poligono)objeto;
+                        bBox = poligono.BBox;
+                        pontos = new List<Ponto4D>();
                         if (xPointClick <= bBox.obterMaiorX && yPointClick <= bBox.obterMaiorY && xPointClick >= bBox.obterMenorX && yPointClick >= bBox.obterMenorY)
                         {
-                            this.objetoSelecionado = poligono;
+                            // Famosa ScanLine
+                            pontos = poligono.getPontosPoligono();
+                            for (int i = 0; i < pontos.Count; i++)
+                            {
+                                pontoAtual = pontos[i];
+                                if ((i+1) == pontos.Count) 
+                                {
+                                    pontoAux = pontos[0];
+                                } 
+                                else 
+                                {
+                                    pontoAux = pontos[i+1];
+                                }
+                                ti = (yPointClick - pontoAtual.Y) / (pontoAux.Y - pontoAtual.Y);
+                                if (ti > 0) 
+                                {
+                                    xi = (pontoAtual.X + (pontoAux.X - pontoAtual.X)*ti);
+                                    if (xi > xPointClick) 
+                                    {
+                                        iteracoes++;
+                                    }
+                                }
+                            }
+
+                            if (iteracoes % 2 != 0)
+                            {
+                                this.objetoSelecionado = poligono;
+                            }
                         }
                     }
                 }
